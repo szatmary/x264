@@ -3389,7 +3389,12 @@ int     x264_encoder_encode( x264_t *h,
         if( fenc->i_frame == 0 )
             h->frames.i_first_pts = fenc->i_pts;
         if( h->frames.i_bframe_delay && fenc->i_frame == h->frames.i_bframe_delay )
-            h->frames.i_bframe_delay_time = fenc->i_pts - h->frames.i_first_pts;
+        {
+            if( h->param.b_stitchable && h->param.b_vfr_input )
+                h->frames.i_bframe_delay_time = fenc->i_pts - ( ( ( fenc->i_frame - fenc->i_coded )  * h->param.i_fps_den * h->param.i_timebase_den ) / ( h->param.i_fps_num * h->param.i_timebase_num ) );
+            else
+                h->frames.i_bframe_delay_time = fenc->i_pts - h->frames.i_first_pts;
+        }
 
         if( h->param.b_vfr_input && fenc->i_pts <= h->frames.i_largest_pts )
             x264_log( h, X264_LOG_WARNING, "non-strictly-monotonic PTS\n" );
