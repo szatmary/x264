@@ -3391,8 +3391,8 @@ int     x264_encoder_encode( x264_t *h,
         if( h->frames.i_bframe_delay && fenc->i_frame == h->frames.i_bframe_delay )
         {
             if (h->param.b_stitchable && h->param.b_vfr_input)
-                h->frames.i_bframe_delay_time = h->frames.i_bframe_delay
-                    * ( h->param.i_fps_den * h->param.i_timebase_den )
+                h->frames.i_bframe_delay_time =
+                    ( h->frames.i_bframe_delay * h->param.i_fps_den * h->param.i_timebase_den )
                     / ( h->param.i_fps_num * h->param.i_timebase_num );
             else
                 h->frames.i_bframe_delay_time = fenc->i_pts - h->frames.i_first_pts;

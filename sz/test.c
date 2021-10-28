@@ -1,4 +1,4 @@
-// gcc test.c ../libx264.a -o test && ./test
+// cd .. && make; cd sz && gcc test.c ../libx264.a -o test && ./test
 #include <assert.h>
 #include <memory.h>
 #include <stdint.h>
@@ -17,19 +17,14 @@ int encode_frames(struct x264_t* h, int first_pts, int frame_dur)
     x264_picture_init(&pic_out);
 
     x264_picture_alloc(&pic_in, params.i_csp, params.i_width, params.i_height);
-    // printf("HERE %d\n", __LINE__);
-    // memset(pic_in.img.plane[0], 0, pic_in.img.i_stride[0] * params.i_height);
-    // printf("HERE %d\n", __LINE__);
-    // memset(pic_in.img.plane[1], 0, pic_in.img.i_stride[1] * (params.i_height << 1));
-    // printf("HERE %d\n", __LINE__);
-    // memset(pic_in.img.plane[2], 0, pic_in.img.i_stride[2] * (params.i_height << 1));
-    // printf("HERE %d\n", __LINE__);
+    memset(pic_in.img.plane[0], 0, pic_in.img.i_stride[0] * params.i_height);
+    memset(pic_in.img.plane[1], 0, pic_in.img.i_stride[1] * (params.i_height >> 1));
+    memset(pic_in.img.plane[2], 0, pic_in.img.i_stride[2] * (params.i_height >> 1));
 
     int i_nals = 0;
     x264_nal_t* p_nals = 0;
     for (int i = 0; i < 25; ++i) {
         pic_in.i_dts = pic_in.i_pts = first_pts + (i * frame_dur);
-        // printf("pic_in.i_pts: %llu\n", pic_in.i_pts);
         if (x264_encoder_encode(h, &p_nals, &i_nals, &pic_in, &pic_out) > 0) {
             printf("dts: %lld, pts: %lld\n", pic_out.i_dts, pic_out.i_pts);
             x264_picture_clean(&pic_out);
