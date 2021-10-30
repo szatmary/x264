@@ -57,8 +57,8 @@ int main(int argc, char** argv)
     param.i_bframe_adaptive = X264_B_ADAPT_NONE;
     param.i_bframe_pyramid = X264_B_PYRAMID_NONE;
 
-    param.i_width = 640;
-    param.i_height = 480;
+    param.i_width = 1920;
+    param.i_height = 1080;
     param.i_csp = X264_CSP_I420;
     param.vui.b_fullrange = 1;
 
@@ -68,11 +68,11 @@ int main(int argc, char** argv)
     struct x264_t* h = x264_encoder_open(&param);
     printf("%d,%d\n", param.i_fps_num, param.i_fps_den);
     // x264_encoder_headers(x264enc, &nals, &i_nals);
-    encode_frames(h, 0, 40);
+    encode_frames(h, 0, 10);
     x264_encoder_close(h);
     h = x264_encoder_open(&param);
     printf("-------------\n");
 
-    encode_frames(h, 40 * 25, 85);
+    encode_frames(h, 40 * 8, 85);
     x264_encoder_close(h);
 }

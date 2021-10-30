@@ -3391,9 +3391,17 @@ int     x264_encoder_encode( x264_t *h,
         if( h->frames.i_bframe_delay && fenc->i_frame == h->frames.i_bframe_delay )
         {
             if (h->param.b_stitchable && h->param.b_vfr_input)
-                h->frames.i_bframe_delay_time =
-                    ( h->frames.i_bframe_delay * h->param.i_fps_den * h->param.i_timebase_den )
-                    / ( h->param.i_fps_num * h->param.i_timebase_num );
+            {
+                uint64_t fps_num, fps_den;
+                const x264_level_t *l = x264_levels;
+                while( l->level_idc && l->level_idc != h->param.i_level_idc )
+                    l++;
+                fps_num = l->mbps;
+                fps_den = h->mb.i_mb_width * h->mb.i_mb_height;
+                x264_reduce_fraction64(&fps_num, &fps_den);
+                h->frames.i_bframe_delay_time = ( h->frames.i_bframe_delay * fps_den * h->param.i_timebase_den ) /
+                    ( fps_num * h->param.i_timebase_num );
+            }
             else
                 h->frames.i_bframe_delay_time = fenc->i_pts - h->frames.i_first_pts;
         }
